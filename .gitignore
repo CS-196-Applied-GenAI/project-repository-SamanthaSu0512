@@ -1,0 +1,21 @@
+# Environment and secrets (do not commit)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Logs and debug
+npm-debug.log*
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build / output
+dist/
+build/
+uploads/
+coverage/

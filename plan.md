@@ -14,7 +14,6 @@ This plan covers the **backend only** (Node.js + Express + MySQL). It aligns wit
 | 4 | Tweets & feed | Create/delete tweet, blended feed, pagination |
 | 5 | Social | Follow/unfollow, block/unblock |
 | 6 | Engagement | Like/unlike, retweet/unretweet |
-| 7 | Search | Search posts and users with block filter |
 
 **Stack:** Node.js, Express, MySQL (chirper), express-session (with store), bcrypt, multer (uploads).
 
@@ -160,7 +159,7 @@ This plan covers the **backend only** (Node.js + Express + MySQL). It aligns wit
 | **5.2.3** | Add unblock helper and `DELETE /api/users/:id/block`. 204. Protected. | Unblock works. |
 | **5.2.4** | Confirm feed (Phase 4) and any user/tweet listing use the same “blocked set” logic so blocker and blocked see no content from each other. | Manual or test: block user → they disappear from feed and vice versa. |
 
-**Phase 5 done when:** Follow, unfollow, block, unblock work; feed (and later search) respect blocks.
+**Phase 5 done when:** Follow, unfollow, block, unblock work; feed respects blocks.
 
 ---
 
@@ -191,21 +190,6 @@ This plan covers the **backend only** (Node.js + Express + MySQL). It aligns wit
 
 ---
 
-## Phase 7: Search
-
-**Goal:** Search posts and users by keyword; respect block filter.
-
-### Chunk 7.1 — Search API
-
-| Step | What to do | Test / checkpoint |
-|------|------------|--------------------|
-| **7.1.1** | Add search helper: given viewer id and query string q, (1) get blocked set for viewer; (2) search tweets: WHERE text LIKE ? AND user_id NOT IN (blocked) AND author not blocking viewer; (3) search users: WHERE (username LIKE ? OR name LIKE ?) AND id NOT IN (blocked). Use LOWER(column) LIKE LOWER(?) for case-insensitive if desired. Limit results per type (e.g. 20 each). | Results exclude blocked in both directions. |
-| **7.1.2** | Add `GET /api/search`: query param `q`. Return `{ tweets: [...], users: [...] }` with author/user info. Protected. | Search returns tweets and users; block filter applied. |
-
-**Phase 7 done when:** Search returns tweets and users by keyword; block rules applied.
-
----
-
 ## Implementation order (summary)
 
 Execute in this order; each step assumes the previous are done and tested.
@@ -224,7 +208,6 @@ Execute in this order; each step assumes the previous are done and tested.
 12. **5.2.1 → 5.2.4** — Block/unblock, confirm feed uses blocks  
 13. **6.1.1 → 6.1.4** — Like/unlike  
 14. **6.2.1 → 6.2.5** — Retweet/unretweet, feed shows retweets  
-15. **7.1.1 → 7.1.2** — Search  
 
 ---
 
@@ -257,13 +240,11 @@ project-root/
       auth.js         # signup, login, logout, me
       users.js        # profile, follow, block, avatar
       tweets.js      # create, delete, like, retweet, feed
-      search.js      # search
     services/        # or lib/
       users.js
       tweets.js
       feed.js
       blocks.js
-      search.js
   uploads/           # profile pictures
 ```
 

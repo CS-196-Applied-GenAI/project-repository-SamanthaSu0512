@@ -2,7 +2,7 @@
 
 **Purpose:** Portfolio/resume project (4-week scope) to demonstrate fluency with AI coding tools.  
 **Target:** Web application.  
-**Grading context:** Implements required functionality for course submission (2.5 points per task, 16 tasks, 40 points max). Additional features (e.g. search) are welcome.
+**Grading context:** Implements required functionality for course submission (2.5 points per task, 16 tasks, 40 points max). Additional features are welcome.
 
 ---
 
@@ -115,23 +115,15 @@
 
 ---
 
-## 4. Additional Feature (In Scope)
+## 4. Future / Optional (Not Required for 4-Week Deliverable)
 
-- **Search**  
-  - Search **posts** and **users** by keyword (e.g. match tweet text and username/display name).  
-  - Simple implementation: MySQL `LIKE` on `tweets.text` and `users.username`/`users.name` (for case-insensitive search use a case-insensitive collation or `LOWER(column) LIKE LOWER(?)`).  
-  - Results: list of matching tweets and/or users; respect block rules (don’t show content from blocked users).
-
----
-
-## 5. Future / Optional (Not Required for 4-Week Deliverable)
 
 - **Notifications** (e.g. “X liked your post”, “Y followed you”) — to be added if time permits.  
 - **Replies (comments)** — not in the 16 required tasks; schema has `comments` table for future use.
 
 ---
 
-## 6. Summary Checklist for Implementation
+## 5. Summary Checklist for Implementation
 
 | # | Feature | Notes |
 |---|--------|--------|
@@ -151,15 +143,14 @@
 | 14 | Unlike a post | |
 | 15 | Retweet | New tweet with retweeted_from |
 | 16 | Unretweet | Delete retweet row |
-| + | Search | Posts + users by keyword |
 | + | Load more | 10 tweets per batch |
 
 ---
 
-## 7. Handoff Notes for Code-Generation AI
+## 6. Handoff Notes for Code-Generation AI
 
 - Use the CS196 MySQL schema and repo for table definitions and setup.  
 - Enforce “logged in required” on every protected route and API call; redirect or 401 when no valid session.  
-- Apply block logic everywhere: feed, search, user profiles, and any listing of tweets or users.  
+- Apply block logic everywhere: feed, user profiles, and any listing of tweets or users.  
 - Keep session handling on the server (session store + cookie); do not rely on JWT for the main auth flow.  
 - Profile picture: validate file type/size on upload; store file and save path in `users.profile_picture`.
