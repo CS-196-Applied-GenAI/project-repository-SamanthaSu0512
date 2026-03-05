@@ -2,7 +2,8 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
 const requireAuth = require('../middleware/requireAuth');
-const { findById, isUsernameTakenByOther, updateProfile, updateProfilePicture } = require('../services/users');
+const { findById, findByUsername, isUsernameTakenByOther, updateProfile, updateProfilePicture } = require('../services/users');
+const { getTweetsByUserId } = require('../services/tweets');
 const { uploadAvatar } = require('../middleware/upload');
 const { follow, unfollow } = require('../services/follows');
 const { block, unblock } = require('../services/blocks');
@@ -16,6 +17,17 @@ router.get('/me', requireAuth, async (req, res) => {
     return res.status(200).json(user);
   } catch (err) {
     console.error('GET /users/me error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/me/tweets', requireAuth, async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit, 10) || 5, 50);
+    const tweets = await getTweetsByUserId(req.session.userId, limit);
+    return res.status(200).json(tweets);
+  } catch (err) {
+    console.error('GET /users/me/tweets error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -68,6 +80,31 @@ router.patch('/me/avatar', requireAuth, (req, res) => {
       return res.status(500).json({ error: 'Internal server error' });
     }
   });
+});
+
+// Get user by username (for profile page). Must be after /me so /me is not treated as username.
+router.get('/:username/tweets', requireAuth, async (req, res) => {
+  try {
+    const user = await findByUsername(req.params.username);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    const limit = Math.min(parseInt(req.query.limit, 10) || 5, 50);
+    const tweets = await getTweetsByUserId(user.id, limit);
+    return res.status(200).json(tweets);
+  } catch (err) {
+    console.error('GET /users/:username/tweets error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/:username', requireAuth, async (req, res) => {
+  try {
+    const user = await findByUsername(req.params.username);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    return res.status(200).json(user);
+  } catch (err) {
+    console.error('GET /users/:username error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 router.post('/:id/follow', requireAuth, async (req, res) => {

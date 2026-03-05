@@ -4,6 +4,7 @@ const {
   createTweet,
   deleteTweetByIdAndOwner,
   getTweetById,
+  getReplies,
   likeTweet,
   unlikeTweet,
   createRetweet,
@@ -15,20 +16,50 @@ const router = express.Router({ mergeParams: true });
 
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { text } = req.body;
+    const { text, parent_tweet_id: parentTweetId } = req.body;
     const userId = req.session.userId;
     if (text != null && text.length > MAX_TEXT_LENGTH) {
       return res.status(400).json({
         error: `Tweet text must be at most ${MAX_TEXT_LENGTH} characters`,
       });
     }
-    const tweet = await createTweet(userId, text || null, null);
+    const tweet = await createTweet(
+      userId,
+      text || null,
+      null,
+      parentTweetId ?? null
+    );
     return res.status(201).json(tweet);
   } catch (err) {
     if (err.statusCode === 400) {
       return res.status(400).json({ error: err.message });
     }
+    if (err.statusCode === 404) {
+      return res.status(404).json({ error: err.message });
+    }
+    if (err.statusCode === 503) {
+      return res.status(503).json({ error: err.message });
+    }
     console.error('POST /tweets error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Must be before other /:id routes so /tweets/:id/replies matches
+router.get('/:id/replies', requireAuth, async (req, res) => {
+  try {
+    const tweetId = Number(req.params.id);
+    if (!Number.isInteger(tweetId) || tweetId < 1) {
+      return res.status(404).json({ error: 'Tweet not found' });
+    }
+    const parent = await getTweetById(tweetId);
+    if (!parent) {
+      return res.status(404).json({ error: 'Tweet not found' });
+    }
+    const replies = await getReplies(tweetId);
+    return res.status(200).json(replies);
+  } catch (err) {
+    console.error('GET /tweets/:id/replies error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });

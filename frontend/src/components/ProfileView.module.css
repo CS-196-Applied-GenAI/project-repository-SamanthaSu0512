@@ -1,0 +1,150 @@
+.wrapper {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.avatarWrap {
+  margin-bottom: 0.75rem;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #e1e8ed;
+}
+
+.name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+}
+
+.username {
+  font-size: 0.9375rem;
+  color: #536471;
+  margin: 0 0 0.5rem 0;
+}
+
+.bio {
+  font-size: 0.9375rem;
+  color: #0f1419;
+  margin: 0 0 1rem 0;
+  white-space: pre-wrap;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.buttonPrimary {
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+  background: #1d9bf0;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  background: #1a8cd8;
+}
+
+.buttonPrimary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.buttonSecondary {
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+  background: transparent;
+  color: #0f1419;
+  border: 1px solid #cfd9de;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.buttonSecondary:hover:not(:disabled) {
+  background: #f7f9f9;
+}
+
+.buttonSecondary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.buttonDanger {
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+  background: transparent;
+  color: #c00;
+  border: 1px solid #c00;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.buttonDanger:hover:not(:disabled) {
+  background: rgba(204, 0, 0, 0.1);
+}
+
+.buttonDanger:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.tweetsSection {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.tweetsTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+}
+
+.loading {
+  font-size: 0.9375rem;
+  color: #536471;
+  margin: 0;
+}
+
+.empty {
+  font-size: 0.9375rem;
+  color: #536471;
+  margin: 0;
+}
+
+.tweetList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.tweetList li {
+  margin: 0;
+  border-bottom: 1px solid #eee;
+}
+
+.tweetList li:last-child {
+  border-bottom: none;
+}

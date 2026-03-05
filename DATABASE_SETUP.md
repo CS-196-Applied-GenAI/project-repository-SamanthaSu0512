@@ -72,6 +72,18 @@ Enter your MySQL root password when prompted for each (or once if your client ca
 
 ---
 
+## 4b. Reply support (optional but recommended)
+
+For reply features (replies to tweets, feed excluding replies), run:
+
+```bash
+mysql -u root -p chirper < migrations/add_parent_tweet_id.sql
+```
+
+If you skip this, the app still runs: replies will not be stored, and the main feed will include all tweets.
+
+---
+
 ## 5. Backend `.env`
 
 Your Node app will read these from a file named **`.env`**. Create it in the same folder as your backend (e.g. project root or `server/` once you have one).

@@ -1,0 +1,45 @@
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.link {
+  color: #1d9bf0;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.logout {
+  margin-left: auto;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+  background: transparent;
+  color: #666;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.logout:hover {
+  background: #eee;
+  color: #333;
+}
+
+.main {
+  flex: 1;
+  padding: 1rem;
+}

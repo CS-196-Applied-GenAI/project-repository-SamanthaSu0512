@@ -36,6 +36,8 @@ router.post('/signup', async (req, res) => {
     }
 
     const user = await createUser({ username, email, password, name });
+    req.session.userId = user.id;
+    req.session.username = user.username;
     return res.status(201).json(user);
   } catch (err) {
     console.error('Signup error:', err);

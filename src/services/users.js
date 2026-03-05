@@ -43,6 +43,18 @@ async function findById(id) {
 }
 
 /**
+ * Find user by username (for profile). Returns user without password_hash, or null.
+ */
+async function findByUsername(username) {
+  if (!username || typeof username !== 'string') return null;
+  const [rows] = await pool.query(
+    'SELECT id, username, email, name, bio, profile_picture, created_at FROM users WHERE username = ?',
+    [username.trim()]
+  );
+  return rows[0] || null;
+}
+
+/**
  * Check if username is taken by another user (excluding excludeUserId). Returns boolean.
  */
 async function isUsernameTakenByOther(username, excludeUserId) {
@@ -107,6 +119,7 @@ module.exports = {
   findDuplicateUsernameOrEmail,
   findByUsernameOrEmail,
   findById,
+  findByUsername,
   isUsernameTakenByOther,
   updateProfile,
   updateProfilePicture,

@@ -3,28 +3,83 @@ const { pool } = require('../config/db');
 const MAX_TEXT_LENGTH = 240;
 
 /**
- * Create a tweet. Enforces text length <= 240. Returns created row.
+ * Create a tweet (or reply). Enforces text length <= 240. Returns created row.
+ * For replies: pass parentTweetId; parent must exist and be a top-level tweet.
  * @param {number} userId
  * @param {string} text
  * @param {number|null} retweetedFrom
+ * @param {number|null} parentTweetId
  * @returns {Promise<object>} created tweet row
- * @throws {Error} if text length > 240
+ * @throws {Error} if text length > 240 or reply validation fails
  */
-async function createTweet(userId, text, retweetedFrom = null) {
+async function createTweet(userId, text, retweetedFrom = null, parentTweetId = null) {
   if (text != null && text.length > MAX_TEXT_LENGTH) {
     const err = new Error('Tweet text exceeds 240 characters');
     err.statusCode = 400;
     throw err;
   }
-  const [result] = await pool.query(
-    'INSERT INTO tweets (user_id, text, retweeted_from) VALUES (?, ?, ?)',
-    [userId, text || null, retweetedFrom]
-  );
-  const [rows] = await pool.query(
-    'SELECT id, user_id, text, image_url, created_at, retweeted_from FROM tweets WHERE id = ?',
-    [result.insertId]
-  );
-  return rows[0];
+  if (parentTweetId != null) {
+    const pid = Number(parentTweetId);
+    if (!Number.isInteger(pid) || pid < 1) {
+      const err = new Error('Invalid parent tweet id');
+      err.statusCode = 400;
+      throw err;
+    }
+    const parent = await getTweetById(pid);
+    if (!parent) {
+      const err = new Error('Parent tweet not found');
+      err.statusCode = 404;
+      throw err;
+    }
+    if (parent.parent_tweet_id != null) {
+      const err = new Error('Cannot reply to a reply');
+      err.statusCode = 400;
+      throw err;
+    }
+  }
+  const params = [userId, text || null, retweetedFrom, parentTweetId ?? null];
+  let result;
+  try {
+    [result] = await pool.query(
+      'INSERT INTO tweets (user_id, text, retweeted_from, parent_tweet_id) VALUES (?, ?, ?, ?)',
+      params
+    );
+  } catch (err) {
+    if (err.errno === 1054 && /parent_tweet_id/.test(err.message)) {
+      if (parentTweetId == null) {
+        const [r] = await pool.query(
+          'INSERT INTO tweets (user_id, text, retweeted_from) VALUES (?, ?, ?)',
+          [userId, text || null, retweetedFrom]
+        );
+        result = r;
+      } else {
+        const migrationErr = new Error(
+          'Replies are not available. Run the database migration: migrations/add_parent_tweet_id.sql'
+        );
+        migrationErr.statusCode = 503;
+        throw migrationErr;
+      }
+    } else {
+      throw err;
+    }
+  }
+  const selectCols = 'id, user_id, text, image_url, created_at, retweeted_from, parent_tweet_id';
+  try {
+    const [rows] = await pool.query(
+      `SELECT ${selectCols} FROM tweets WHERE id = ?`,
+      [result.insertId]
+    );
+    return rows[0];
+  } catch (err) {
+    if (err.errno === 1054 && /parent_tweet_id/.test(err.message)) {
+      const [rows] = await pool.query(
+        'SELECT id, user_id, text, image_url, created_at, retweeted_from FROM tweets WHERE id = ?',
+        [result.insertId]
+      );
+      return rows[0];
+    }
+    throw err;
+  }
 }
 
 /**
@@ -40,13 +95,113 @@ async function deleteTweetByIdAndOwner(tweetId, userId) {
 
 /**
  * Get one tweet by id (for ownership check). Returns row or null.
+ * parent_tweet_id included when column exists (run migrations/add_parent_tweet_id.sql).
  */
 async function getTweetById(tweetId) {
-  const [rows] = await pool.query(
-    'SELECT id, user_id, text, created_at, retweeted_from FROM tweets WHERE id = ?',
-    [tweetId]
-  );
-  return rows[0] || null;
+  try {
+    const [rows] = await pool.query(
+      'SELECT id, user_id, text, created_at, retweeted_from, parent_tweet_id FROM tweets WHERE id = ?',
+      [tweetId]
+    );
+    return rows[0] || null;
+  } catch (err) {
+    if (err.errno === 1054 && /parent_tweet_id/.test(err.message)) {
+      const [rows] = await pool.query(
+        'SELECT id, user_id, text, created_at, retweeted_from FROM tweets WHERE id = ?',
+        [tweetId]
+      );
+      return rows[0] || null;
+    }
+    throw err;
+  }
+}
+
+/**
+ * Get tweets by user id (top-level only when parent_tweet_id exists). For profile page.
+ */
+async function getTweetsByUserId(userId, limit = 5) {
+  const uid = Number(userId);
+  if (!Number.isInteger(uid) || uid < 1) return [];
+  const limitVal = Math.min(limit, 50);
+  const withParent = `SELECT t.id, t.user_id, t.text, t.created_at, t.retweeted_from, t.parent_tweet_id,
+            u.username AS author_username, u.name AS author_name, u.profile_picture AS author_profile_picture
+     FROM tweets t JOIN users u ON u.id = t.user_id
+     WHERE t.user_id = ? AND (t.parent_tweet_id IS NULL) ORDER BY t.created_at DESC LIMIT ?`;
+  try {
+    const [rows] = await pool.query(withParent, [uid, limitVal]);
+    return rows.map((r) => ({
+      id: r.id,
+      user_id: r.user_id,
+      text: r.text,
+      created_at: r.created_at,
+      retweeted_from: r.retweeted_from,
+      parent_tweet_id: r.parent_tweet_id,
+      author: {
+        id: r.user_id,
+        username: r.author_username,
+        name: r.author_name,
+        profile_picture: r.author_profile_picture,
+      },
+    }));
+  } catch (err) {
+    if (err.errno === 1054 && /parent_tweet_id/.test(err.message)) {
+      const [rows] = await pool.query(
+        `SELECT t.id, t.user_id, t.text, t.created_at, t.retweeted_from,
+            u.username AS author_username, u.name AS author_name, u.profile_picture AS author_profile_picture
+     FROM tweets t JOIN users u ON u.id = t.user_id
+     WHERE t.user_id = ? ORDER BY t.created_at DESC LIMIT ?`,
+        [uid, limitVal]
+      );
+      return rows.map((r) => ({
+        id: r.id,
+        user_id: r.user_id,
+        text: r.text,
+        created_at: r.created_at,
+        retweeted_from: r.retweeted_from,
+        author: {
+          id: r.user_id,
+          username: r.author_username,
+          name: r.author_name,
+          profile_picture: r.author_profile_picture,
+        },
+      }));
+    }
+    throw err;
+  }
+}
+
+/**
+ * Get replies to a tweet (parent_tweet_id = tweetId). Returns [] when column does not exist.
+ */
+async function getReplies(tweetId) {
+  const id = Number(tweetId);
+  if (!Number.isInteger(id) || id < 1) return [];
+  try {
+    const [rows] = await pool.query(
+      `SELECT t.id, t.user_id AS author_id, t.text, t.created_at, t.parent_tweet_id,
+              u.username, u.name, u.profile_picture
+       FROM tweets t
+       JOIN users u ON u.id = t.user_id
+       WHERE t.parent_tweet_id = ?
+       ORDER BY t.created_at ASC`,
+      [id]
+    );
+    return rows.map((r) => ({
+      id: r.id,
+      author_id: r.author_id,
+      text: r.text,
+      created_at: r.created_at,
+      parent_tweet_id: r.parent_tweet_id,
+      author: {
+        username: r.username,
+        name: r.name,
+        profile_picture: r.profile_picture,
+      },
+    }));
+  } catch (err) {
+    if (err.errno === 1054 && /parent_tweet_id/.test(err.message)) return [];
+    throw err;
+  }
 }
 
 /**
@@ -97,6 +252,8 @@ module.exports = {
   createTweet,
   deleteTweetByIdAndOwner,
   getTweetById,
+  getReplies,
+  getTweetsByUserId,
   likeTweet,
   unlikeTweet,
   createRetweet,

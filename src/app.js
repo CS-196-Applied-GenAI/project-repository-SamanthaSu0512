@@ -13,6 +13,9 @@ const app = express();
 const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
+// Required when behind a proxy (e.g. Vite dev server proxying /api to backend)
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(
   session({
@@ -24,6 +27,8 @@ app.use(
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: 'lax',
+      path: '/',
     },
   })
 );
@@ -34,6 +39,11 @@ app.use('/api/tweets', tweetsRoutes);
 app.use('/api/feed', feedRoutes);
 
 app.get('/health', (req, res) => {
+  res.status(200).json({ ok: true });
+});
+
+// Same response under /api for frontend proxy (all API under /api)
+app.get('/api/health', (req, res) => {
   res.status(200).json({ ok: true });
 });
 

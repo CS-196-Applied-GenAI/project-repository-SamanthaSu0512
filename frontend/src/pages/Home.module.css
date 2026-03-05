@@ -1,0 +1,65 @@
+.wrapper {
+  max-width: 36rem;
+  margin: 0 auto;
+}
+
+.welcome {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+.feedList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tweet {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.tweet:last-child {
+  border-bottom: none;
+}
+
+.author {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: #0f1419;
+  margin-bottom: 0.25rem;
+}
+
+.text {
+  font-size: 0.9375rem;
+  color: #0f1419;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.time {
+  font-size: 0.8125rem;
+  color: #536471;
+  margin-top: 0.25rem;
+}
+
+.loading {
+  padding: 1.5rem;
+  text-align: center;
+  color: #536471;
+}
+
+.error {
+  padding: 1rem;
+  color: #c00;
+  background: #fef2f2;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: #536471;
+}

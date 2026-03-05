@@ -1,0 +1,38 @@
+.wrapper {
+  max-width: 28rem;
+  margin: 2rem auto;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.message {
+  font-size: 1rem;
+  color: #536471;
+  margin: 0 0 1.5rem 0;
+}
+
+.links {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.link {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  color: #1d9bf0;
+  text-decoration: none;
+  border: 1px solid #1d9bf0;
+  border-radius: 4px;
+}
+
+.link:hover {
+  background: rgba(29, 155, 240, 0.1);
+}
