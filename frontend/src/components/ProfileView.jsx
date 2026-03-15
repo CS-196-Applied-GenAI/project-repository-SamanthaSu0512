@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import TweetCard from './TweetCard';
 import styles from './ProfileView.module.css';
 
@@ -20,6 +21,7 @@ export default function ProfileView({
   onUnfollow,
   onBlock,
   onUnblock,
+  currentUserId,
 }) {
   const refetchTweets = useCallback(() => {
     onTweetsUpdate?.();
@@ -42,6 +44,11 @@ export default function ProfileView({
         <h1 className={styles.name}>{user.name || user.username || 'Unknown'}</h1>
         <p className={styles.username}>@{user.username}</p>
         {user.bio && <p className={styles.bio}>{user.bio}</p>}
+        {isOwnProfile && (
+          <Link to="/profile/edit" className={styles.editLink}>
+            Edit profile
+          </Link>
+        )}
         {!isOwnProfile && (
           <div className={styles.actions}>
             {followState?.following ? (
@@ -102,6 +109,7 @@ export default function ProfileView({
                     retweeted: tweet.retweeted ?? false,
                   }}
                   onUpdate={refetchTweets}
+                  currentUserId={currentUserId}
                 />
               </li>
             ))}

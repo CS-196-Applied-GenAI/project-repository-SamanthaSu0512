@@ -61,7 +61,7 @@ export default function Home() {
         <ul className={styles.feedList}>
           {feed.map((tweet) => (
             <li key={tweet.id}>
-              <TweetCard tweet={tweet} onUpdate={refetchFeed} />
+              <TweetCard tweet={tweet} onUpdate={refetchFeed} currentUserId={user?.id} />
             </li>
           ))}
         </ul>

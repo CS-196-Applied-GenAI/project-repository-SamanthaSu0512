@@ -57,6 +57,25 @@
   line-height: 1.5;
 }
 
+.editLink {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+  border: 2px solid var(--color-primary);
+  border-radius: 10px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.editLink:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
+  text-decoration: none;
+}
+
 .actions {
   display: flex;
   gap: 0.6rem;

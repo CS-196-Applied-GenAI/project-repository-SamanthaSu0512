@@ -11,6 +11,7 @@ import Compose from './pages/Compose';
 import Reply from './pages/Reply';
 import Replies from './pages/Replies';
 import Profile from './pages/Profile';
+import ProfileEdit from './pages/ProfileEdit';
 import ProfileByUsername from './pages/ProfileByUsername';
 import Settings from './pages/Settings';
 import Blocked from './pages/Blocked';
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/tweet/:id/reply" element={<ProtectedRoute><AuthenticatedLayout><Reply /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/tweet/:id/replies" element={<ProtectedRoute><AuthenticatedLayout><Replies /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><AuthenticatedLayout><Profile /></AuthenticatedLayout></ProtectedRoute>} />
+          <Route path="/profile/edit" element={<ProtectedRoute><AuthenticatedLayout><ProfileEdit /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/profile/:username" element={<ProtectedRoute><AuthenticatedLayout><ProfileByUsername /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><AuthenticatedLayout><Settings /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/blocked" element={<ProtectedRoute><AuthenticatedLayout><Blocked /></AuthenticatedLayout></ProtectedRoute>} />

@@ -57,7 +57,7 @@ describe('Compose', () => {
       );
     });
     await waitFor(() => {
-      expect(screen.getByText(/Welcome, alice/)).toBeInTheDocument();
+      expect(screen.getByText(/Welcome back, alice/i)).toBeInTheDocument();
     });
   });
 

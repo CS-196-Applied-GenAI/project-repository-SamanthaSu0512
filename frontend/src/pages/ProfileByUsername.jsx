@@ -147,6 +147,7 @@ export default function ProfileByUsername() {
       onUnfollow={handleUnfollow}
       onBlock={handleBlock}
       onUnblock={handleUnblock}
+      currentUserId={currentUser?.id}
     />
   );
 }

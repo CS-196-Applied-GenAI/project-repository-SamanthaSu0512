@@ -118,53 +118,95 @@ async function getTweetById(tweetId) {
 
 /**
  * Get tweets by user id (top-level only when parent_tweet_id exists). For profile page.
+ * Includes originalTweet when the row is a retweet so the frontend can show the original content.
  */
 async function getTweetsByUserId(userId, limit = 5) {
   const uid = Number(userId);
   if (!Number.isInteger(uid) || uid < 1) return [];
   const limitVal = Math.min(limit, 50);
   const withParent = `SELECT t.id, t.user_id, t.text, t.created_at, t.retweeted_from, t.parent_tweet_id,
-            u.username AS author_username, u.name AS author_name, u.profile_picture AS author_profile_picture
-     FROM tweets t JOIN users u ON u.id = t.user_id
+            u.username AS author_username, u.name AS author_name, u.profile_picture AS author_profile_picture,
+            orig.id AS original_id, orig.text AS original_text, orig.created_at AS original_created_at,
+            ou.id AS original_author_id, ou.username AS original_author_username, ou.name AS original_author_name, ou.profile_picture AS original_author_profile_picture
+     FROM tweets t
+     JOIN users u ON u.id = t.user_id
+     LEFT JOIN tweets orig ON t.retweeted_from = orig.id
+     LEFT JOIN users ou ON orig.user_id = ou.id
      WHERE t.user_id = ? AND (t.parent_tweet_id IS NULL) ORDER BY t.created_at DESC LIMIT ?`;
   try {
     const [rows] = await pool.query(withParent, [uid, limitVal]);
-    return rows.map((r) => ({
-      id: r.id,
-      user_id: r.user_id,
-      text: r.text,
-      created_at: r.created_at,
-      retweeted_from: r.retweeted_from,
-      parent_tweet_id: r.parent_tweet_id,
-      author: {
-        id: r.user_id,
-        username: r.author_username,
-        name: r.author_name,
-        profile_picture: r.author_profile_picture,
-      },
-    }));
-  } catch (err) {
-    if (err.errno === 1054 && /parent_tweet_id/.test(err.message)) {
-      const [rows] = await pool.query(
-        `SELECT t.id, t.user_id, t.text, t.created_at, t.retweeted_from,
-            u.username AS author_username, u.name AS author_name, u.profile_picture AS author_profile_picture
-     FROM tweets t JOIN users u ON u.id = t.user_id
-     WHERE t.user_id = ? ORDER BY t.created_at DESC LIMIT ?`,
-        [uid, limitVal]
-      );
-      return rows.map((r) => ({
+    return rows.map((r) => {
+      const out = {
         id: r.id,
         user_id: r.user_id,
         text: r.text,
         created_at: r.created_at,
         retweeted_from: r.retweeted_from,
+        parent_tweet_id: r.parent_tweet_id,
         author: {
           id: r.user_id,
           username: r.author_username,
           name: r.author_name,
           profile_picture: r.author_profile_picture,
         },
-      }));
+      };
+      if (r.retweeted_from && r.original_id) {
+        out.originalTweet = {
+          id: r.original_id,
+          text: r.original_text,
+          created_at: r.original_created_at,
+          author: {
+            id: r.original_author_id,
+            username: r.original_author_username,
+            name: r.original_author_name,
+            profile_picture: r.original_author_profile_picture,
+          },
+        };
+      }
+      return out;
+    });
+  } catch (err) {
+    if (err.errno === 1054 && /parent_tweet_id/.test(err.message)) {
+      const [rows] = await pool.query(
+        `SELECT t.id, t.user_id, t.text, t.created_at, t.retweeted_from,
+            u.username AS author_username, u.name AS author_name, u.profile_picture AS author_profile_picture,
+            orig.id AS original_id, orig.text AS original_text, orig.created_at AS original_created_at,
+            ou.id AS original_author_id, ou.username AS original_author_username, ou.name AS original_author_name, ou.profile_picture AS original_author_profile_picture
+     FROM tweets t JOIN users u ON u.id = t.user_id
+     LEFT JOIN tweets orig ON t.retweeted_from = orig.id
+     LEFT JOIN users ou ON orig.user_id = ou.id
+     WHERE t.user_id = ? ORDER BY t.created_at DESC LIMIT ?`,
+        [uid, limitVal]
+      );
+      return rows.map((r) => {
+        const out = {
+          id: r.id,
+          user_id: r.user_id,
+          text: r.text,
+          created_at: r.created_at,
+          retweeted_from: r.retweeted_from,
+          author: {
+            id: r.user_id,
+            username: r.author_username,
+            name: r.author_name,
+            profile_picture: r.author_profile_picture,
+          },
+        };
+        if (r.retweeted_from && r.original_id) {
+          out.originalTweet = {
+            id: r.original_id,
+            text: r.original_text,
+            created_at: r.original_created_at,
+            author: {
+              id: r.original_author_id,
+              username: r.original_author_username,
+              name: r.original_author_name,
+              profile_picture: r.original_author_profile_picture,
+            },
+          };
+        }
+        return out;
+      });
     }
     throw err;
   }

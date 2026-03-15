@@ -51,6 +51,32 @@ export async function postJson(path, body) {
 }
 
 /**
+ * PATCH JSON to same-origin API with session cookies.
+ */
+export async function patchJson(path, body) {
+  const res = await fetch(path, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  let parsed;
+  try {
+    parsed = text ? JSON.parse(text) : null;
+  } catch {
+    parsed = { raw: text };
+  }
+  if (!res.ok) {
+    const err = new Error(parsed?.error || res.statusText || 'Request failed');
+    err.status = res.status;
+    err.body = parsed;
+    throw err;
+  }
+  return parsed;
+}
+
+/**
  * DELETE request with credentials (no body). Throws on !res.ok.
  */
 export async function deleteJson(path) {

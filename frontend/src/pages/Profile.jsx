@@ -66,6 +66,7 @@ export default function Profile() {
       loading={tweetsLoading}
       isOwnProfile
       onTweetsUpdate={fetchTweets}
+      currentUserId={currentUser?.id}
     />
   );
 }

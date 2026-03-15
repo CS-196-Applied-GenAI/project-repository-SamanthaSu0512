@@ -13,6 +13,27 @@
   border-color: var(--color-border-strong);
 }
 
+.retweetedBy {
+  margin: 0 0 0.4rem 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.retweetedByLabel {
+  font-weight: 500;
+}
+
+.retweeterLink {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.retweeterLink:hover {
+  text-decoration: underline;
+  color: var(--color-primary-hover);
+}
+
 .header {
   display: flex;
   align-items: baseline;
@@ -86,4 +107,26 @@
 .replyLink:hover {
   text-decoration: underline;
   color: var(--color-accent-hover);
+}
+
+.deleteBtn {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+
+.deleteBtn:hover:not(:disabled) {
+  color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.deleteBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }

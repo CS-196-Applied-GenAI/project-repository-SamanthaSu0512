@@ -9,13 +9,20 @@ function formatDate(createdAt) {
   return d.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' });
 }
 
-export default function TweetCard({ tweet, onUpdate }) {
+export default function TweetCard({ tweet, onUpdate, currentUserId }) {
   const [liked, setLiked] = useState(tweet.liked ?? false);
   const [retweeted, setRetweeted] = useState(tweet.retweeted ?? false);
   const [busy, setBusy] = useState(false);
 
+  const isRetweet = Boolean(tweet.originalTweet);
   const username = tweet.author?.username ?? 'unknown';
   const originalId = tweet.retweeted_from ?? tweet.id;
+  // For retweets, show original tweet content; otherwise show this tweet's text
+  const displayText = isRetweet ? (tweet.originalTweet?.text ?? '') : (tweet.text ?? '');
+  const displayAuthor = isRetweet ? tweet.originalTweet?.author : tweet.author;
+  const displayUsername = displayAuthor?.username ?? 'unknown';
+  const tweetOwnerId = tweet.user_id ?? tweet.author_id;
+  const isOwner = currentUserId != null && tweetOwnerId === currentUserId;
 
   async function handleLike() {
     if (busy) return;
@@ -55,15 +62,35 @@ export default function TweetCard({ tweet, onUpdate }) {
     }
   }
 
+  async function handleDelete() {
+    if (busy || !isOwner) return;
+    if (!window.confirm('Delete this tweet?')) return;
+    setBusy(true);
+    try {
+      await deleteJson(`/api/tweets/${tweet.id}`);
+      onUpdate?.();
+    } catch {
+      // keep card on error
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <article className={styles.tweet}>
+      {isRetweet && (
+        <p className={styles.retweetedBy}>
+          <span className={styles.retweetedByLabel}>Retweeted by </span>
+          <Link to={`/profile/${username}`} className={styles.retweeterLink}>@{username}</Link>
+        </p>
+      )}
       <div className={styles.header}>
-        <Link to={`/profile/${username}`} className={styles.author}>
-          @{username}
+        <Link to={`/profile/${displayUsername}`} className={styles.author}>
+          @{displayUsername}
         </Link>
-        <span className={styles.time}>{formatDate(tweet.created_at)}</span>
+        <span className={styles.time}>{formatDate(isRetweet ? tweet.originalTweet?.created_at : tweet.created_at)}</span>
       </div>
-      <div className={styles.text}>{tweet.text ?? ''}</div>
+      <div className={styles.text}>{displayText}</div>
       <div className={styles.actions}>
         <button
           type="button"
@@ -83,9 +110,20 @@ export default function TweetCard({ tweet, onUpdate }) {
         >
           Retweet {retweeted ? '✓' : ''}
         </button>
-        <Link to={`/tweet/${tweet.id}/reply`} className={styles.replyLink}>
+        <Link to={`/tweet/${isRetweet ? tweet.originalTweet?.id : tweet.id}/reply`} className={styles.replyLink}>
           Reply
         </Link>
+        {isOwner && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={busy}
+            className={styles.deleteBtn}
+            aria-label="Delete tweet"
+          >
+            Delete
+          </button>
+        )}
       </div>
     </article>
   );

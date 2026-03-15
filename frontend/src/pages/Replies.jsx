@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getJson } from '../api';
+import { useAuth } from '../auth/AuthContext';
 import TweetCard from '../components/TweetCard';
 import styles from './Replies.module.css';
 
 export default function Replies() {
   const { id } = useParams();
+  const { user: currentUser } = useAuth();
   const [replies, setReplies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,6 +69,7 @@ export default function Replies() {
                   retweeted: reply.retweeted ?? false,
                 }}
                 onUpdate={fetchReplies}
+                currentUserId={currentUser?.id}
               />
             </li>
           ))}

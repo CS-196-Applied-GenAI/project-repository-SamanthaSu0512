@@ -28,7 +28,7 @@ describe('AuthContext', () => {
     window.history.pushState({}, '', '/');
     render(<App />);
     await waitFor(() => {
-      expect(screen.getByText(/Welcome, alice/)).toBeInTheDocument();
+      expect(screen.getByText(/Welcome back, alice/i)).toBeInTheDocument();
     });
   });
 
@@ -64,7 +64,7 @@ describe('AuthContext', () => {
     window.history.pushState({}, '', '/login');
     render(<App />);
     await waitFor(() => {
-      expect(screen.getByText(/Welcome, alice/)).toBeInTheDocument();
+      expect(screen.getByText(/Welcome back, alice/i)).toBeInTheDocument();
     });
   });
 });
