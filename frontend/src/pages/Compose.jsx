@@ -36,7 +36,10 @@ export default function Compose() {
 
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.title}>New tweet</h1>
+      <div className={styles.header}>
+        <h1 className={styles.title}>New tweet</h1>
+        <p className={styles.subtitle}>Share your thoughts with the world</p>
+      </div>
       <form onSubmit={handleSubmit} className={styles.form}>
         <label className={styles.label}>
           What's happening?

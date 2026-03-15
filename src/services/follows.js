@@ -22,4 +22,15 @@ async function unfollow(followerId, followeeId) {
   );
 }
 
-module.exports = { follow, unfollow };
+/**
+ * Check if viewer (followerId) is following target (followeeId).
+ */
+async function isFollowing(followerId, followeeId) {
+  const [rows] = await pool.query(
+    'SELECT 1 FROM follows WHERE follower_id = ? AND followee_id = ? LIMIT 1',
+    [followerId, followeeId]
+  );
+  return rows.length > 0;
+}
+
+module.exports = { follow, unfollow, isFollowing };

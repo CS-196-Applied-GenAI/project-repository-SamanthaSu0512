@@ -36,4 +36,31 @@ async function unblock(blockerId, blockedId) {
   );
 }
 
-module.exports = { getBlockedSet, block, unblock };
+/**
+ * Check if viewer (blockerId) is blocking target (blockedId).
+ */
+async function isBlocking(blockerId, blockedId) {
+  const [rows] = await pool.query(
+    'SELECT 1 FROM blocks WHERE blocker_id = ? AND blocked_id = ? LIMIT 1',
+    [blockerId, blockedId]
+  );
+  return rows.length > 0;
+}
+
+/**
+ * Get list of users that the given user has blocked (for "Blocked users" page).
+ * Returns array of user objects (id, username, name, profile_picture, etc.) without password.
+ */
+async function getBlockedUsers(blockerId) {
+  const [rows] = await pool.query(
+    `SELECT u.id, u.username, u.name, u.bio, u.profile_picture, u.created_at
+     FROM blocks b
+     JOIN users u ON u.id = b.blocked_id
+     WHERE b.blocker_id = ?
+     ORDER BY b.created_at DESC`,
+    [blockerId]
+  );
+  return rows;
+}
+
+module.exports = { getBlockedSet, block, unblock, isBlocking, getBlockedUsers };

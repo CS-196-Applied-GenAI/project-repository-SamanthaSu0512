@@ -52,8 +52,10 @@ export default function Reply() {
 
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.title}>Reply</h1>
-      <p className={styles.parentHint}>Replying to tweet #{id}</p>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Reply</h1>
+        <p className={styles.parentHint}>Replying to tweet #{id}</p>
+      </div>
       <form onSubmit={handleSubmit} className={styles.form}>
         <label className={styles.label}>
           Your reply

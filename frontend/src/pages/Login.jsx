@@ -32,8 +32,10 @@ export default function Login() {
 
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.title}>Log in</h1>
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Log in</h1>
+        <p className={styles.subtitle}>Welcome back to Chirper</p>
+        <form onSubmit={handleSubmit} className={styles.form}>
         <label className={styles.label}>
           Username or email
           <input
@@ -60,10 +62,11 @@ export default function Login() {
         <button type="submit" disabled={submitting} className={styles.button}>
           {submitting ? 'Signing in…' : 'Sign in'}
         </button>
-      </form>
-      <p className={styles.footer}>
-        Don&apos;t have an account? <Link to="/signup" className={styles.link}>Sign up</Link>
-      </p>
+        </form>
+        <p className={styles.footer}>
+          Don&apos;t have an account? <Link to="/signup" className={styles.link}>Sign up</Link>
+        </p>
+      </div>
     </div>
   );
 }

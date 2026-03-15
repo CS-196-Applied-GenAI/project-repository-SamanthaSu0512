@@ -5,8 +5,8 @@ const requireAuth = require('../middleware/requireAuth');
 const { findById, findByUsername, isUsernameTakenByOther, updateProfile, updateProfilePicture } = require('../services/users');
 const { getTweetsByUserId } = require('../services/tweets');
 const { uploadAvatar } = require('../middleware/upload');
-const { follow, unfollow } = require('../services/follows');
-const { block, unblock } = require('../services/blocks');
+const { follow, unfollow, isFollowing } = require('../services/follows');
+const { block, unblock, isBlocking, getBlockedUsers } = require('../services/blocks');
 
 const router = express.Router();
 
@@ -28,6 +28,16 @@ router.get('/me/tweets', requireAuth, async (req, res) => {
     return res.status(200).json(tweets);
   } catch (err) {
     console.error('GET /users/me/tweets error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/me/blocks', requireAuth, async (req, res) => {
+  try {
+    const users = await getBlockedUsers(req.session.userId);
+    return res.status(200).json(users);
+  } catch (err) {
+    console.error('GET /users/me/blocks error:', err);
     return res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -100,6 +110,14 @@ router.get('/:username', requireAuth, async (req, res) => {
   try {
     const user = await findByUsername(req.params.username);
     if (!user) return res.status(404).json({ error: 'User not found' });
+    const viewerId = req.session.userId;
+    if (viewerId !== user.id) {
+      const [following, blocking] = await Promise.all([
+        isFollowing(viewerId, user.id),
+        isBlocking(viewerId, user.id),
+      ]);
+      return res.status(200).json({ ...user, is_following: following, is_blocking: blocking });
+    }
     return res.status(200).json(user);
   } catch (err) {
     console.error('GET /users/:username error:', err);

@@ -36,8 +36,10 @@ export default function Signup() {
 
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.title}>Create account</h1>
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Create account</h1>
+        <p className={styles.subtitle}>Join Chirper and start sharing</p>
+        <form onSubmit={handleSubmit} className={styles.form}>
         <label className={styles.label}>
           Username
           <input
@@ -85,10 +87,11 @@ export default function Signup() {
         <button type="submit" disabled={submitting} className={styles.button}>
           {submitting ? 'Creating account…' : 'Sign up'}
         </button>
-      </form>
-      <p className={styles.footer}>
-        Already have an account? <Link to="/login" className={styles.link}>Log in</Link>
-      </p>
+        </form>
+        <p className={styles.footer}>
+          Already have an account? <Link to="/login" className={styles.link}>Log in</Link>
+        </p>
+      </div>
     </div>
   );
 }

@@ -12,6 +12,8 @@ import Reply from './pages/Reply';
 import Replies from './pages/Replies';
 import Profile from './pages/Profile';
 import ProfileByUsername from './pages/ProfileByUsername';
+import Settings from './pages/Settings';
+import Blocked from './pages/Blocked';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -28,6 +30,8 @@ export default function App() {
           <Route path="/tweet/:id/replies" element={<ProtectedRoute><AuthenticatedLayout><Replies /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><AuthenticatedLayout><Profile /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/profile/:username" element={<ProtectedRoute><AuthenticatedLayout><ProfileByUsername /></AuthenticatedLayout></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><AuthenticatedLayout><Settings /></AuthenticatedLayout></ProtectedRoute>} />
+          <Route path="/blocked" element={<ProtectedRoute><AuthenticatedLayout><Blocked /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>

@@ -7,10 +7,10 @@
 .loading {
   padding: 1rem;
   text-align: center;
-  color: #536471;
+  color: var(--color-text-muted);
 }
 
 .error {
-  color: #c00;
+  color: var(--color-error);
   font-size: 0.9375rem;
 }

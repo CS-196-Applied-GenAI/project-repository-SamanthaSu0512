@@ -14,15 +14,21 @@ export default function AuthenticatedLayout({ children }) {
   return (
     <div className={styles.wrapper}>
       <nav className={styles.nav}>
-        <Link to="/" className={styles.link}>Feed</Link>
-        <Link to="/compose" className={styles.link}>Compose</Link>
-        <Link to="/profile" className={styles.link}>My profile</Link>
-        <button type="button" onClick={handleLogout} className={styles.logout}>
-          Logout
-        </button>
+        <div className={styles.navInner}>
+          <span className={styles.brand}>Chirper</span>
+          <Link to="/" className={styles.link}>Feed</Link>
+          <Link to="/compose" className={`${styles.link} ${styles.linkCompose}`}>Compose</Link>
+          <Link to="/profile" className={styles.link}>My profile</Link>
+          <Link to="/settings" className={styles.link}>Settings</Link>
+          <button type="button" onClick={handleLogout} className={styles.logout}>
+            Logout
+          </button>
+        </div>
       </nav>
       <main className={styles.main}>
-        {children}
+        <div className={styles.mainInner}>
+          {children}
+        </div>
       </main>
     </div>
   );

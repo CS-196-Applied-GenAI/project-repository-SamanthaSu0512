@@ -25,7 +25,13 @@ export default function ProfileByUsername() {
     setUserLoading(true);
     setError(null);
     getJson(`/api/users/${encodeURIComponent(username)}`)
-      .then(setUser)
+      .then((data) => {
+        setUser(data);
+        if (data.id !== currentUser.id) {
+          setFollowing(Boolean(data.is_following));
+          setBlocking(Boolean(data.is_blocking));
+        }
+      })
       .catch((err) => {
         setError(err.status === 404 ? 'User not found' : err.message || 'Failed to load profile');
         setUser(null);

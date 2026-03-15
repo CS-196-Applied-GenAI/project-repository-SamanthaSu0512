@@ -40,7 +40,10 @@ export default function Home() {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.welcome}>Welcome, {user.username}</div>
+      <div className={styles.hero}>
+        <p className={styles.welcome}>Welcome back, {user.username}</p>
+        <p className={styles.welcomeMuted}>Here’s what’s happening in your feed</p>
+      </div>
 
       {feedError && (
         <div className={styles.error} role="alert">{feedError}</div>

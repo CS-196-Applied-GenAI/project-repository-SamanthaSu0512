@@ -1,41 +1,49 @@
 .tweet {
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
+  padding: 1.1rem 1.25rem 1.1rem 1.35rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  border-left: 4px solid var(--color-primary);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 
-.tweet:last-child {
-  border-bottom: none;
+.tweet:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-border-strong);
 }
 
 .header {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
 }
 
 .author {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9375rem;
-  color: #1d9bf0;
+  color: var(--color-primary);
   text-decoration: none;
 }
 
 .author:hover {
   text-decoration: underline;
+  color: var(--color-primary-hover);
 }
 
 .time {
   font-size: 0.8125rem;
-  color: #536471;
+  color: var(--color-text-muted);
 }
 
 .text {
   font-size: 0.9375rem;
-  color: #0f1419;
+  color: var(--color-text);
   white-space: pre-wrap;
   word-break: break-word;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
+  line-height: 1.5;
 }
 
 .actions {
@@ -46,17 +54,20 @@
 
 .action,
 .actionActive {
-  padding: 0.25rem 0.5rem;
+  padding: 0.3rem 0.6rem;
   font-size: 0.8125rem;
   background: transparent;
   border: none;
-  color: #536471;
+  color: var(--color-text-muted);
   cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
 }
 
 .action:hover:not(:disabled),
 .actionActive {
-  color: #1d9bf0;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
 }
 
 .action:disabled,
@@ -67,10 +78,12 @@
 
 .replyLink {
   font-size: 0.8125rem;
-  color: #1d9bf0;
+  color: var(--color-accent);
   text-decoration: none;
+  font-weight: 600;
 }
 
 .replyLink:hover {
   text-decoration: underline;
+  color: var(--color-accent-hover);
 }

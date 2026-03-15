@@ -5,47 +5,62 @@
 }
 
 .header {
-  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, rgba(167, 243, 208, 0.5) 100%);
+  border-radius: 14px;
+  border: 1px solid var(--color-border);
 }
 
 .title {
-  margin-bottom: 0.25rem;
+  margin: 0;
   font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 .parentHint {
-  margin-bottom: 0.75rem;
+  margin: 0.35rem 0 0 0;
   font-size: 0.875rem;
-  color: #536471;
+  color: var(--color-text-muted);
 }
 
 .replyLink {
   display: inline-block;
+  margin-top: 0.75rem;
   padding: 0.5rem 1rem;
   font-size: 0.9375rem;
-  color: #1d9bf0;
+  font-weight: 600;
+  color: var(--color-accent);
   text-decoration: none;
-  border: 1px solid #1d9bf0;
-  border-radius: 4px;
+  border: 2px solid var(--color-accent);
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
 }
 
 .replyLink:hover {
-  background: rgba(29, 155, 240, 0.1);
+  background: var(--color-accent-light);
+  color: var(--color-accent-hover);
+  text-decoration: none;
 }
 
 .loading {
-  color: #536471;
+  color: var(--color-text-muted);
   font-size: 0.9375rem;
 }
 
 .error {
-  color: #c00;
+  color: var(--color-error);
   font-size: 0.9375rem;
 }
 
 .empty {
-  color: #536471;
+  color: var(--color-text-muted);
   font-size: 0.9375rem;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border-radius: 12px;
+  border: 2px dashed var(--color-border);
 }
 
 .replyList {
@@ -54,7 +69,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .replyList li {
